@@ -1,8 +1,8 @@
 package character
 
 import (
-	"state-machine/src/inputs"
-	"state-machine/src/state"
+	"raylib-go-2d-topdown/src/inputs"
+	"raylib-go-2d-topdown/src/state"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -33,7 +33,7 @@ func (walking *WalkingCharacterState) HandleInputs(inputs *inputs.Inputs) state.
 	}
 
 	var updatedX, updatedY float32 = 0, 0
-	
+
 	if inputs.PressedDown {
 		updatedY = 1
 	} else if inputs.PressedUp {

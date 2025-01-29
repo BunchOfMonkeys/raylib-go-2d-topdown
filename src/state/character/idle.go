@@ -1,8 +1,8 @@
 package character
 
 import (
-	"state-machine/src/inputs"
-	"state-machine/src/state"
+	"raylib-go-2d-topdown/src/inputs"
+	"raylib-go-2d-topdown/src/state"
 )
 
 type IdleCharacterState struct {

@@ -1,11 +1,11 @@
 package character
 
 import (
-	"state-machine/src/inputs"
-	character_state "state-machine/src/state/character"
+	"raylib-go-2d-topdown/src/inputs"
+	character_state "raylib-go-2d-topdown/src/state/character"
 
 	//in next snippet
-	"state-machine/src/state"
+	"raylib-go-2d-topdown/src/state"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )

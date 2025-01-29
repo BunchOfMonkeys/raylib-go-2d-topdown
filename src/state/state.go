@@ -1,7 +1,7 @@
 package state
 
 import (
-	"state-machine/src/inputs"
+	"raylib-go-2d-topdown/src/inputs"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )

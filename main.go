@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"state-machine/src/character"
-	"state-machine/src/inputs"
+	"raylib-go-2d-topdown/src/character"
+	"raylib-go-2d-topdown/src/inputs"
 
-	character_state "state-machine/src/state/character"
+	character_state "raylib-go-2d-topdown/src/state/character"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )

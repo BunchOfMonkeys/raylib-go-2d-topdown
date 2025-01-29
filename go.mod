@@ -1,4 +1,4 @@
-module state-machine
+module raylib-go-2d-topdown
 
 go 1.22.2
 
