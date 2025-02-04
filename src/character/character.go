@@ -1,13 +1,21 @@
 package character
 
 import (
+	"raylib-go-2d-topdown/src/animation"
+	character_animation "raylib-go-2d-topdown/src/animation/character"
 	"raylib-go-2d-topdown/src/inputs"
 	character_state "raylib-go-2d-topdown/src/state/character"
 
-	//in next snippet
 	"raylib-go-2d-topdown/src/state"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
+)
+
+const (
+	characterWidth      = 48
+	characterHeight     = 48
+	characterHalfWidth  = characterWidth / 2
+	characterHalfHeight = characterHeight / 2
 )
 
 type Character struct {
@@ -17,18 +25,21 @@ type Character struct {
 
 	position      rl.Vector2
 	movementSpeed float32
+
+	animationPlayer *animation.AnimationPlayer
 }
 
 func New(
 	position rl.Vector2,
 ) *Character {
 	c := &Character{
-		//this is bad, mkay? we'll address this later
 		texture: rl.LoadTexture("./assets/Characters/BasicCharacterSpritesheet.png"),
 
 		position:      position,
 		movementSpeed: 3,
 	}
+
+	c.animationPlayer = character_animation.NewCharacterAnimationPlayer(c)
 
 	idleState := character_state.NewIdleCharacterState(c)
 	walkingState := character_state.NewWalkingCharacterState(c)
@@ -56,27 +67,22 @@ func (c *Character) HandleInputs(inputs *inputs.Inputs) {
 	}
 }
 
-func (c *Character) Update() {
+func (c *Character) Update(delta float32) {
 	if c.GetCurrentState() == nil {
 		return
 	}
 
 	c.GetCurrentState().Update()
+	c.animationPlayer.Update(delta)
 }
 
-// but the Rendering is done here
+// now the animation player takes care of rendering
 func (c *Character) Render() {
-	rl.DrawTextureRec(
-		c.texture,
-		//sprite size is 48x48 px, we'll draw the first row, first column one from the spritesheet
-		rl.NewRectangle(0, 0, 48, 48),
-		//character's position is basically a dot in the center of the sprite,
-		//so we need to draw it from position shifter by half of sprite both by X and Y
+	c.animationPlayer.Render(
 		rl.NewVector2(
-			c.position.X-24,
-			c.position.Y-24,
+			c.position.X-characterHalfWidth,
+			c.position.Y-characterHalfHeight,
 		),
-		rl.White,
 	)
 }
 
@@ -84,4 +90,18 @@ func (c *Character) Move(direction rl.Vector2) {
 	direction = rl.Vector2Normalize(direction)
 	c.position.X += direction.X * c.movementSpeed
 	c.position.Y += direction.Y * c.movementSpeed
+}
+
+// implement Animated interface
+func (c *Character) SetAnimation(name string) error {
+	return c.animationPlayer.SetAnimation(name)
+}
+
+// implement Textured interface
+func (c *Character) GetTexture() *rl.Texture2D {
+	return &c.texture
+}
+
+func (c *Character) GetTextureDimensions() rl.Vector2 {
+	return rl.NewVector2(characterWidth, characterHeight)
 }

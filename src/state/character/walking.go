@@ -1,23 +1,26 @@
 package character
 
 import (
+	"raylib-go-2d-topdown/src/animation"
+	character_animation "raylib-go-2d-topdown/src/animation/character"
 	"raylib-go-2d-topdown/src/inputs"
 	"raylib-go-2d-topdown/src/state"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-type StatefulAndMovable interface {
+type StatefulAnimatedAndMovable interface {
 	state.Stateful
+	animation.Animated
 	state.Movable
 }
 
 type WalkingCharacterState struct {
-	character StatefulAndMovable
+	character StatefulAnimatedAndMovable
 	direction *rl.Vector2
 }
 
-func NewWalkingCharacterState(character StatefulAndMovable) *WalkingCharacterState {
+func NewWalkingCharacterState(character StatefulAnimatedAndMovable) *WalkingCharacterState {
 	return &WalkingCharacterState{
 		character: character,
 		direction: &rl.Vector2{X: 0, Y: 0},
@@ -27,27 +30,55 @@ func NewWalkingCharacterState(character StatefulAndMovable) *WalkingCharacterSta
 func (walking *WalkingCharacterState) Enter() {}
 
 func (walking *WalkingCharacterState) HandleInputs(inputs *inputs.Inputs) state.State {
-	if inputs.PressedDown == inputs.PressedUp &&
-		inputs.PressedLeft == inputs.PressedRight {
-		return walking.character.GetState(CharacterStateIdle)
+	var X, Y float32 = 0, 0
+	if inputs.PressedRight {
+		X++
 	}
-
-	var updatedX, updatedY float32 = 0, 0
-
-	if inputs.PressedDown {
-		updatedY = 1
-	} else if inputs.PressedUp {
-		updatedY = -1
-	}
-
 	if inputs.PressedLeft {
-		updatedX = -1
-	} else if inputs.PressedRight {
-		updatedX = 1
+		X--
+	}
+	if inputs.PressedUp {
+		Y--
+	}
+	if inputs.PressedDown {
+		Y++
 	}
 
-	walking.direction.X = updatedX
-	walking.direction.Y = updatedY
+	if X == 0 && Y == 0 {
+		state := walking.character.GetStates()[CharacterStateIdle]
+		switch idleState := state.(type) {
+		case *IdleCharacterState:
+			//set idle facing to last movement direction
+			idleState.facing.X = walking.direction.X
+			idleState.facing.Y = walking.direction.Y
+		}
+
+		return state
+	}
+
+	if X != walking.direction.X || Y != walking.direction.Y {
+		//update animation
+		var walkingAnimation string
+
+		if Y != 0 {
+			if Y > 0 {
+				walkingAnimation = character_animation.CharacterWalkingDownAnimation
+			} else {
+				walkingAnimation = character_animation.CharacterWalkingUpAnimation
+			}
+		} else {
+			if X > 0 {
+				walkingAnimation = character_animation.CharacterWalkingRightAnimation
+			} else {
+				walkingAnimation = character_animation.CharacterWalkingLeftAnimation
+			}
+		}
+
+		walking.character.SetAnimation(walkingAnimation)
+	}
+
+	walking.direction.X = X
+	walking.direction.Y = Y
 
 	return nil
 }

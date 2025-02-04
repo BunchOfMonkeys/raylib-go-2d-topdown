@@ -99,7 +99,7 @@ func render() {
 }
 
 func update() {
-	characterInstance.Update()
+	characterInstance.Update(rl.GetFrameTime())
 }
 
 func cleanup() {
